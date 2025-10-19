@@ -1,15 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const {
-    democheck
+    democheck,
+    placeOrder
 } = require("../controllers/itemController");
 
-// Routes
-// router.get("/", getAllItems);
-// router.get("/:id", getItemById);
-// router.post("/", createItem);
-// router.put("/:id", updateItem);
-// router.delete("/:id", deleteItem);
+
 router.get("/democheck" , democheck)
+
+router.post("/orders" , placeOrder)
 
 module.exports = router;

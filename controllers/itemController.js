@@ -1,5 +1,6 @@
 const { response } = require("express");
 const Item = require("../models/Items");
+const Orders = require("../models/Orders");
 
 // Get all items
 const getAllItems = async (req, res) => {
@@ -73,11 +74,62 @@ const democheck = async (req, res) => {
 };
 
 
+const placeOrder = async (req , res) => {
+
+    console.log("place order called ")
+     try {
+    const body = req.body;
+
+    console.log("body " , body)
+    
+    if (!body.product || !body.product.id || !body.user) {
+      return res.status(400).json({ success: false, message: "Missing required order fields." });
+    }
+
+    
+    const quantity = Number(body.quantityKg) || 1;
+    const pricePerKg = Number(body.product.pricePerKg) || 0;
+    const expectedTotal = Number((pricePerKg * quantity).toFixed(2));
+
+    
+    const orderData = {
+      product: {
+        id: body.product.id,
+        name: body.product.name,
+        pricePerKg: pricePerKg,
+        mrpPerKg: body.product.mrpPerKg,
+      },
+      quantityKg: quantity,
+      priceBreakup: {
+        totalPrice: expectedTotal,
+        discountPercent: body.priceBreakup?.discountPercent || 0,
+      },
+      user: {
+        name: body.user.name,
+        phone: body.user.phone,
+        email: body.user.email,
+        address: body.user.address,
+      },
+      paymentMethod: body.paymentMethod || "cod",
+      notes: body.notes || "",
+    };
+
+    const order = new Orders(orderData);
+    await order.save();
+
+    return res.status(201).json({ success: true, orderId: order._id, message: "Order created" });
+  } catch (err) {
+    console.error("Order create error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+ 
 module.exports = {
     getAllItems,
     getItemById,
     createItem,
     updateItem,
     deleteItem,
-    democheck
+    democheck,
+    placeOrder
 };
