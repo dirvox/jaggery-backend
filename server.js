@@ -4,9 +4,14 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+// app.use(cors({
+//   origin: ["https://khatauligud.com", "https://www.khatauligud.com" , "http://localhost:3000" ],
+//   credentials: true
+// }));
+
+
 app.use(cors({
-  origin: ["https://khatauligud.com", "https://www.khatauligud.com" , "http://localhost:3000" ],
-  credentials: true
+  origin: "*",
 }));
 
 app.use(express.json());
