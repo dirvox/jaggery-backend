@@ -123,6 +123,26 @@ const placeOrder = async (req , res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 }
+
+const getOrder = async (req, res) => {
+  try {
+    const orders = await Orders.find(); // ✅ add await
+
+    console.log("orders:", orders);
+
+    return res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching orders",
+    });
+  }
+};
+
  
 module.exports = {
     getAllItems,
@@ -131,5 +151,6 @@ module.exports = {
     updateItem,
     deleteItem,
     democheck,
-    placeOrder
+    placeOrder,
+    getOrder
 };
