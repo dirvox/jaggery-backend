@@ -1,6 +1,7 @@
 const { response } = require("express");
 const Item = require("../models/Items");
 const Orders = require("../models/Orders");
+const Contact = require("../models/Contact")
 
 // Get all items
 const getAllItems = async (req, res) => {
@@ -143,6 +144,62 @@ const getOrder = async (req, res) => {
   }
 };
 
+
+
+
+const contact = async (req, res) => {
+  try {
+    const { name, phone, email, subject, message } = req.body;
+
+    if (!name || !phone || !email || !subject || !message) {
+      return res.status(400).json({ success: false, message: "All fields required" });
+    }
+
+    const newContact = new Contact({ name, phone, email, subject, message });
+    await newContact.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Message received successfully!",
+    });
+  } catch (error) {
+    console.error("Contact form error:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+
+
+const getContact = async (req, res) => {
+  try {
+    const contacts = await Contact.find().sort({ createdAt: -1 }); // latest first
+
+    if (!contacts || contacts.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No contact messages found",
+      });
+    }
+
+    console.log("Contacts fetched:", contacts.length);
+
+    return res.status(200).json({
+      success: true,
+      count: contacts.length,
+      data: contacts,
+    });
+  } catch (error) {
+    console.error("Error fetching contacts:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error while fetching contacts",
+    });
+  }
+};
+
+module.exports = { getContact };
+
+
  
 module.exports = {
     getAllItems,
@@ -152,5 +209,7 @@ module.exports = {
     deleteItem,
     democheck,
     placeOrder,
-    getOrder
+    getOrder , 
+    contact,
+    getContact
 };
