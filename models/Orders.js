@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const AddressSchema = new mongoose.Schema({
   line1: { type: String, required: true },
@@ -26,10 +26,21 @@ const OrderSchema = new mongoose.Schema({
     email: { type: String },
     address: { type: AddressSchema, required: true },
   },
-  paymentMethod: { type: String, enum: ["cod", "upi", "online"], default: "cod" },
-  status: { type: String, enum: ["pending", "confirmed", "dispatched", "delivered", "cancelled"], default: "pending" },
+  paymentMethod: {
+    type: String,
+    enum: ["cod", "upi", "online"],
+    default: "cod",
+  },
+  status: {
+    type: String,
+    enum: ["pending", "confirmed", "dispatched", "delivered", "cancelled"],
+    default: "pending",
+  },
   notes: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.models.Order || mongoose.model("Order", OrderSchema);
+// ✅ Define and export model
+const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
+
+export default Order;

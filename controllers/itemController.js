@@ -1,72 +1,68 @@
-const { response } = require("express");
-const Item = require("../models/Items");
-const Orders = require("../models/Orders");
-const Contact = require("../models/Contact")
+import express from "express";
+import Item from "../models/Items.js";
+import Orders from "../models/Orders.js";
+import Contact from "../models/Contact.js";
+import nodemailer from "nodemailer";
 
 // Get all items
-const getAllItems = async (req, res) => {
-    try {
-        const items = await Item.find();
-        res.json(items);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+export const getAllItems = async (req, res) => {
+  try {
+    const items = await Item.find();
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 // Get single item
-const getItemById = async (req, res) => {
-    try {
-        const item = await Item.findById(req.params.id);
-        if (!item) return res.status(404).json({ message: "Item not found" });
-        res.json(item);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+export const getItemById = async (req, res) => {
+  try {
+    const item = await Item.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+    res.json(item);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 // Create item
-const createItem = async (req, res) => {
-    const { name, price } = req.body;
-    const newItem = new Item({ name, price });
-    try {
-        const savedItem = await newItem.save();
-        res.status(201).json(savedItem);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
+export const createItem = async (req, res) => {
+  const { name, price } = req.body;
+  const newItem = new Item({ name, price });
+  try {
+    const savedItem = await newItem.save();
+    res.status(201).json(savedItem);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 };
 
 // Update item
-const updateItem = async (req, res) => {
-    try {
-        const updatedItem = await Item.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        );
-        if (!updatedItem) return res.status(404).json({ message: "Item not found" });
-        res.json(updatedItem);
-    } catch (err) {
-        res.status(400).json({ message: err.message });
-    }
+export const updateItem = async (req, res) => {
+  try {
+    const updatedItem = await Item.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedItem) return res.status(404).json({ message: "Item not found" });
+    res.json(updatedItem);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 };
 
 // Delete item
-const deleteItem = async (req, res) => {
-    try {
-        const item = await Item.findByIdAndDelete(req.params.id);
-        if (!item) return res.status(404).json({ message: "Item not found" });
-        res.json({ message: "Item deleted" });
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+export const deleteItem = async (req, res) => {
+  try {
+    const item = await Item.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+    res.json({ message: "Item deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
-
-// controllers/itemController.js
-const democheck = async (req, res) => {
+// Demo check
+export const democheck = async (req, res) => {
   try {
-    console.log("democheck called"); // logs whenever the route is hit
+    console.log("democheck called");
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error("Error in democheck:", error);
@@ -74,25 +70,22 @@ const democheck = async (req, res) => {
   }
 };
 
+// Place order
+export const placeOrder = async (req, res) => {
+  console.log("place order called");
 
-const placeOrder = async (req , res) => {
-
-    console.log("place order called ")
-     try {
+  try {
     const body = req.body;
+    console.log("body", body);
 
-    console.log("body " , body)
-    
     if (!body.product || !body.product.id || !body.user) {
       return res.status(400).json({ success: false, message: "Missing required order fields." });
     }
 
-    
     const quantity = Number(body.quantityKg) || 1;
     const pricePerKg = Number(body.product.pricePerKg) || 0;
     const expectedTotal = Number((pricePerKg * quantity).toFixed(2));
 
-    
     const orderData = {
       product: {
         id: body.product.id,
@@ -123,12 +116,12 @@ const placeOrder = async (req , res) => {
     console.error("Order create error:", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
-}
+};
 
-const getOrder = async (req, res) => {
+// Get all orders
+export const getOrder = async (req, res) => {
   try {
-    const orders = await Orders.find(); // ✅ add await
-
+    const orders = await Orders.find();
     console.log("orders:", orders);
 
     return res.status(200).json({
@@ -144,10 +137,8 @@ const getOrder = async (req, res) => {
   }
 };
 
-
-
-
-const contact = async (req, res) => {
+// Contact form
+export const contact = async (req, res) => {
   try {
     const { name, phone, email, subject, message } = req.body;
 
@@ -168,11 +159,10 @@ const contact = async (req, res) => {
   }
 };
 
-
-
-const getContact = async (req, res) => {
+// Get all contacts
+export const getContact = async (req, res) => {
   try {
-    const contacts = await Contact.find().sort({ createdAt: -1 }); // latest first
+    const contacts = await Contact.find().sort({ createdAt: -1 });
 
     if (!contacts || contacts.length === 0) {
       return res.status(404).json({
@@ -197,19 +187,32 @@ const getContact = async (req, res) => {
   }
 };
 
-module.exports = { getContact };
+// Send email
+export const sendEmail = async (req, res) => {
+  console.log("Email Called");
 
+  try {
+    const { content } = req.body;
 
- 
-module.exports = {
-    getAllItems,
-    getItemById,
-    createItem,
-    updateItem,
-    deleteItem,
-    democheck,
-    placeOrder,
-    getOrder , 
-    contact,
-    getContact
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "devanshjinraniya41@gmail.com",
+        pass: "mtonrhqeigxyrjto", // Gmail app password
+      },
+    });
+
+    const mailOptions = {
+      from: '"Technical Hub by DV" <devanshjinraniya41@gmail.com>',
+      to: content,
+      subject: "New Email from Website",
+      html: `<p>This email was sent by Devansh Jinraniya via your website contact form.</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: "Email sent successfully!" });
+  } catch (error) {
+    console.error("Email send error:", error);
+    res.status(500).json({ message: "Failed to send email", error: error.message });
+  }
 };

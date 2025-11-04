@@ -1,9 +1,16 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+
+import itemRoutes from "./routes/itemRoutes.js";
+import emailRouter from "./routes/emailRoutes.js";
+
+dotenv.config();
 
 const app = express();
+
+// ✅ CORS setup
 app.use(
   cors({
     origin: [
@@ -15,23 +22,22 @@ app.use(
   })
 );
 
+// ✅ Parse JSON bodies
+app.use(express.json({ limit: "2mb" }));
 
-
-
-
-app.use(express.json());
-
-// Routes
-const itemRoutes = require("./routes/itemRoutes");
+// ✅ Routes
 app.use("/items", itemRoutes);
+app.use("/email", emailRouter);
 
-// Connect MongoDB
-mongoose.connect(process.env.MONGO_URI, {
+// ✅ MongoDB connection
+mongoose
+  .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-})
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.log(err));
+  })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+// ✅ Start server
 const PORT = process.env.PORT || 5003;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
