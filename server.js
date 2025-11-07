@@ -16,7 +16,9 @@ app.use(
     origin: [
       "https://khatauligud.com",
       "https://www.khatauligud.com",
-      "http://localhost:3000"
+      "http://localhost:3000",
+      "https://admin.khatauligud.com",
+      "http://localhost:5173"
     ],
     credentials: true,
   })
