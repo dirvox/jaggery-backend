@@ -28,8 +28,15 @@ app.use(
 app.use(express.json({ limit: "2mb" }));
 
 // ✅ Routes
-app.use("/items", itemRoutes);
-app.use("/email", emailRouter);
+
+// fo local
+app.use("/api/items", itemRoutes);
+app.use("/api/email", emailRouter);
+
+// for server 
+// app.use("/items", itemRoutes);
+// app.use("/email", emailRouter);
+
 
 // ✅ MongoDB connection
 mongoose
